@@ -35,3 +35,13 @@
     </div>
     <span class="form_error" ng-show="GOINPUTNAME[review_label].$error.server">{{ GOINPUTNAME[review_label].$error.server }}</span>
 </div>
+<div class="form_item_block">
+    <label>Results</label>
+    <div class="checkbox_row">
+        <label><input type="checkbox" ng-model="result_failed" ng-true-value="on" ng-required="false"/>Failed</label>
+        <label><input type="checkbox" ng-model="result_passed" ng-true-value="on" ng-required="false"/>Passed</label>
+        <label><input type="checkbox" ng-model="result_cancelled" ng-true-value="on" ng-required="false"/>Cancelled</label>
+        <label><input type="checkbox" ng-model="result_unknown" ng-true-value="on" ng-required="false"/>Unknown</label>
+    </div>
+    <span class="form_error" ng-show="GOINPUTNAME[status].$error.server">{{ GOINPUTNAME[oauth_token].$error.server }}</span>
+</div>

@@ -3,6 +3,7 @@ package com.tw.go.plugin.provider;
 import com.tw.go.plugin.setting.DefaultPluginSettings;
 import com.tw.go.plugin.setting.PluginConfigurationView;
 import com.tw.go.plugin.setting.PluginSettings;
+import com.tw.go.plugin.util.ResultParser;
 
 import java.util.Map;
 
@@ -23,12 +24,14 @@ public abstract class DefaultProvider implements Provider {
 
     @Override
     public PluginSettings pluginSettings(Map<String, String> responseBodyMap) {
+        ResultParser resultParser = new ResultParser(PLUGIN_SETTING_RESULT_PREFIX, CHECKBOX_TRUE_VALUE);
         return new DefaultPluginSettings(
                 responseBodyMap.get(PLUGIN_SETTINGS_SERVER_BASE_URL),
                 responseBodyMap.get(PLUGIN_SETTINGS_END_POINT),
                 responseBodyMap.get(PLUGIN_SETTINGS_USERNAME),
                 responseBodyMap.get(PLUGIN_SETTINGS_PASSWORD),
-                responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN)
+                responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN),
+                resultParser.toSet(responseBodyMap)
         );
     }
 }

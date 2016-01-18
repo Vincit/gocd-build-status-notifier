@@ -4,10 +4,7 @@ import com.tw.go.plugin.provider.DefaultProvider;
 import com.tw.go.plugin.provider.gerrit.response.ResponseParser;
 import com.tw.go.plugin.provider.gerrit.response.model.CommitDetails;
 import com.tw.go.plugin.setting.PluginSettings;
-import com.tw.go.plugin.util.AuthenticationType;
-import com.tw.go.plugin.util.HTTPClient;
-import com.tw.go.plugin.util.JSONUtils;
-import com.tw.go.plugin.util.StringUtils;
+import com.tw.go.plugin.util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,12 +97,14 @@ public class GerritProvider extends DefaultProvider {
 
     @Override
     public PluginSettings pluginSettings(Map<String, String> responseBodyMap) {
+        ResultParser resultParser = new ResultParser(PLUGIN_SETTING_RESULT_PREFIX, CHECKBOX_TRUE_VALUE);
         return new GerritPluginSettings(
                 responseBodyMap.get(PLUGIN_SETTINGS_SERVER_BASE_URL),
                 responseBodyMap.get(PLUGIN_SETTINGS_END_POINT),
                 responseBodyMap.get(PLUGIN_SETTINGS_USERNAME),
                 responseBodyMap.get(PLUGIN_SETTINGS_PASSWORD),
                 responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN),
+                resultParser.toSet(responseBodyMap),
                 responseBodyMap.get(PLUGIN_SETTINGS_REVIEW_LABEL)
         );
     }

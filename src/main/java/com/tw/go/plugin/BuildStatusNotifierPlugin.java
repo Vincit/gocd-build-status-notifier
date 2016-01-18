@@ -24,6 +24,7 @@ import static java.util.Arrays.asList;
 
 @Extension
 public class BuildStatusNotifierPlugin implements GoPlugin {
+
     private static Logger LOGGER = Logger.getLoggerFor(BuildStatusNotifierPlugin.class);
 
     public static final String EXTENSION_NAME = "notification";
@@ -157,7 +158,9 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
                     String prId = (String) modificationData.get("PR_ID");
 
                     try {
-                        provider.updateStatus(url, pluginSettings, prId, revision, pipelineStage, result, trackbackURL);
+                        if (pluginSettings.shouldNotify(result)) {
+                            provider.updateStatus(url, pluginSettings, prId, revision, pipelineStage, result, trackbackURL);
+                        }
                     } catch (Exception e) {
                         LOGGER.error(String.format("Error occurred. Could not update build status - URL: %s Revision: %s Build: %s Result: %s", url, revision, pipelineInstance, result), e);
                     }

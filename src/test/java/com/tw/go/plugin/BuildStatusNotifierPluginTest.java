@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.tw.go.plugin.BuildStatusNotifierPlugin.PLUGIN_SETTINGS_GET_CONFIGURATION;
+import static com.tw.go.plugin.setting.DefaultPluginConfigurationView.PLUGIN_SETTING_RESULT_PREFIX;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -43,7 +45,10 @@ public class BuildStatusNotifierPluginTest {
         plugin = new BuildStatusNotifierPlugin();
 
         DefaultGoApiResponse pluginSettingsResponse = new DefaultGoApiResponse(200);
-        pluginSettingsResponse.setResponseBody(JSONUtils.toJSON(new HashMap<String, String>()));
+        Map<String, String> pluginSettings = new HashMap<String, String>();
+        pluginSettings.put(PLUGIN_SETTING_RESULT_PREFIX + "cancelled", "on");
+        pluginSettings.put(PLUGIN_SETTING_RESULT_PREFIX + "passed", "on");
+        pluginSettingsResponse.setResponseBody(JSONUtils.toJSON(pluginSettings));
         when(goApplicationAccessor.submit(any(GoApiRequest.class))).thenReturn(pluginSettingsResponse);
         when(provider.pluginId()).thenReturn(GitHubProvider.PLUGIN_ID);
         when(provider.pollerPluginId()).thenReturn(GitHubProvider.GITHUB_PR_POLLER_PLUGIN_ID);
@@ -61,6 +66,7 @@ public class BuildStatusNotifierPluginTest {
     public void shouldDelegateUpdateStatusToProviderWithCorrectParameters() throws Exception {
         PluginSettings mockSettings = mock(PluginSettings.class);
         when(plugin.getPluginSettings()).thenReturn(mockSettings);
+        when(mockSettings.shouldNotify(anyString())).thenReturn(true);
 
         String expectedURL = "url";
         String expectedUsername = "username";
@@ -72,9 +78,10 @@ public class BuildStatusNotifierPluginTest {
         String stageCounter = "1";
         String expectedPipelineStage = String.format("%s/%s", pipelineName, stageName);
         String expectedPipelineInstance = String.format("%s/%s/%s/%s", pipelineName, pipelineCounter, stageName, stageCounter);
+        String stageResult = "Passed";
         String expectedStageResult = "Passed";
 
-        Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, expectedStageResult);
+        Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, stageResult);
         plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));
 
         verify(provider).updateStatus(eq(expectedURL), any(PluginSettings.class), eq("1"), eq(expectedRevision), eq(expectedPipelineStage), eq(expectedStageResult), eq("http://localhost:8153/go/pipelines/" + expectedPipelineInstance));
@@ -145,6 +152,28 @@ public class BuildStatusNotifierPluginTest {
                 return null;
             }
         };
+    }
+
+    @Test
+    public void shouldNotifyOnlyWhenCorrectStatus() throws Exception {
+        String expectedURL = "url";
+        String expectedUsername = "username";
+        String expectedRevision = "sha-1";
+        String expectedPRId = "1";
+        String pipelineName = "pipeline";
+        String pipelineCounter = "1";
+        String stageName = "stage";
+        String stageCounter = "1";
+        String result = "failed";
+
+        PluginSettings mockSettings = mock(PluginSettings.class);
+        when(plugin.getPluginSettings()).thenReturn(mockSettings);
+        when(mockSettings.shouldNotify(anyString())).thenReturn(false);
+
+        Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, result);
+        plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));
+
+        verify(provider, never()).updateStatus(anyString(), any(PluginSettings.class), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     private Map createRequestBodyMap(String url, String username, String revision, String prId, String pipelineName, String pipelineCounter, String stageName, String stageCounter, String stageResult) {

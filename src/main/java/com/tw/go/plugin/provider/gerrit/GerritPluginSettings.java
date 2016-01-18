@@ -2,6 +2,8 @@ package com.tw.go.plugin.provider.gerrit;
 
 import com.tw.go.plugin.setting.DefaultPluginSettings;
 
+import java.util.Set;
+
 public class GerritPluginSettings extends DefaultPluginSettings {
 
     private String reviewLabel;
@@ -9,8 +11,8 @@ public class GerritPluginSettings extends DefaultPluginSettings {
     public GerritPluginSettings() {
     }
 
-    public GerritPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, String reviewLabel) {
-        super(serverBaseURL, endPoint, username, password, oauthToken);
+    public GerritPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, Set<String> results, String reviewLabel) {
+        super(serverBaseURL, endPoint, username, password, oauthToken, results);
         this.reviewLabel = reviewLabel;
     }
 

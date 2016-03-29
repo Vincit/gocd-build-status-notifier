@@ -105,7 +105,11 @@ public class GerritProvider extends DefaultProvider {
                 responseBodyMap.get(PLUGIN_SETTINGS_PASSWORD),
                 responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN),
                 resultParser.toSet(responseBodyMap),
-                responseBodyMap.get(PLUGIN_SETTINGS_REVIEW_LABEL)
+                responseBodyMap.get(PLUGIN_SETTINGS_REVIEW_LABEL),
+                CHECKBOX_TRUE_VALUE.equals(responseBodyMap.get(PLUGIN_SETTINGS_PASS_AT_END)),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_USERNAME),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_PASSWORD),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_SERVER_HOST)
         );
     }
 

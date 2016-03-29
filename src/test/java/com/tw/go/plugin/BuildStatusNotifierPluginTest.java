@@ -12,10 +12,13 @@ import com.tw.go.plugin.provider.stash.StashProvider;
 import com.tw.go.plugin.setting.PluginConfigurationView;
 import com.tw.go.plugin.setting.PluginSettings;
 import com.tw.go.plugin.util.JSONUtils;
+import com.tw.go.plugin.util.NotifyResolver;
+import com.tw.go.plugin.util.NotifyResolverFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +38,15 @@ public class BuildStatusNotifierPluginTest {
     private GoApplicationAccessor goApplicationAccessor;
     @Mock
     private Provider provider;
+    @Mock
+    private NotifyResolverFactory notifyResolverFactory;
+    @Mock
+    private NotifyResolver notifyResolver;
 
     private BuildStatusNotifierPlugin plugin;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         initMocks(this);
 
         plugin = new BuildStatusNotifierPlugin();
@@ -53,8 +60,12 @@ public class BuildStatusNotifierPluginTest {
         when(provider.pluginId()).thenReturn(GitHubProvider.PLUGIN_ID);
         when(provider.pollerPluginId()).thenReturn(GitHubProvider.GITHUB_PR_POLLER_PLUGIN_ID);
 
+        when(notifyResolver.shouldNotify(anyString(), anyString(), anyString())).thenReturn(true);
+        when(notifyResolverFactory.getResolver(any(PluginSettings.class))).thenReturn(notifyResolver);
+
         plugin.initializeGoApplicationAccessor(goApplicationAccessor);
         plugin.setProvider(provider);
+        plugin.setNotifyResolverFactory(notifyResolverFactory);
     }
 
     @Test
@@ -67,6 +78,7 @@ public class BuildStatusNotifierPluginTest {
         PluginSettings mockSettings = mock(PluginSettings.class);
         when(plugin.getPluginSettings()).thenReturn(mockSettings);
         when(mockSettings.shouldNotify(anyString())).thenReturn(true);
+        when(mockSettings.isPassAtEnd()).thenReturn(true);
 
         String expectedURL = "url";
         String expectedUsername = "username";
@@ -166,9 +178,9 @@ public class BuildStatusNotifierPluginTest {
         String stageCounter = "1";
         String result = "failed";
 
-        PluginSettings mockSettings = mock(PluginSettings.class);
-        when(plugin.getPluginSettings()).thenReturn(mockSettings);
-        when(mockSettings.shouldNotify(anyString())).thenReturn(false);
+        String pipelineStageName = String.format("%s/%s", pipelineName, stageName);
+
+        when(notifyResolver.shouldNotify(pipelineStageName, pipelineCounter, result)).thenReturn(false);
 
         Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, result);
         plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));

@@ -9,17 +9,25 @@ public class DefaultPluginSettings implements PluginSettings {
     private String password;
     private String oauthToken;
     private Set<String> results;
+    private boolean passAtEnd;
+    private String goAPIUsername;
+    private String goAPIPassword;
+    private String goAPIServerHost;
 
     public DefaultPluginSettings() {
     }
 
-    public DefaultPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, Set<String> results) {
+    public DefaultPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, Set<String> results, boolean passAtEnd, String goAPIUsername, String goAPIPassword, String goAPIServerHost) {
         this.serverBaseURL = serverBaseURL;
         this.endPoint = endPoint;
         this.username = username;
         this.password = password;
         this.oauthToken = oauthToken;
         this.results = results;
+        this.passAtEnd = passAtEnd;
+        this.goAPIUsername = goAPIUsername;
+        this.goAPIPassword = goAPIPassword;
+        this.goAPIServerHost = goAPIServerHost;
     }
 
     @Override
@@ -76,6 +84,42 @@ public class DefaultPluginSettings implements PluginSettings {
         this.results = results;
     }
 
+    @Override
+    public boolean isPassAtEnd() {
+        return passAtEnd;
+    }
+
+    public void setPassAtEnd(boolean passAtEnd) {
+        this.passAtEnd = passAtEnd;
+    }
+
+    @Override
+    public String getGoAPIUsername() {
+        return goAPIUsername;
+    }
+
+    public void setGoAPIUsername(String goAPIUsername) {
+        this.goAPIUsername = goAPIUsername;
+    }
+
+    @Override
+    public String getGoAPIPassword() {
+        return goAPIPassword;
+    }
+
+    public void setGoAPIPassword(String goAPIPassword) {
+        this.goAPIPassword = goAPIPassword;
+    }
+
+    @Override
+    public String getGoAPIServerHost() {
+        return goAPIServerHost;
+    }
+
+    public void setGoAPIServerHost(String goAPIServerHost) {
+        this.goAPIServerHost = goAPIServerHost;
+    }
+
     public boolean shouldNotify(String status) {
         if (status == null) {
             return true;
@@ -98,6 +142,9 @@ public class DefaultPluginSettings implements PluginSettings {
             return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
         if (results != null ? !results.equals(that.results) : that.results != null) return false;
+        if (goAPIUsername != null ? !goAPIUsername.equals(that.goAPIUsername) : that.goAPIUsername != null) return false;
+        if (goAPIPassword != null ? !goAPIPassword.equals(that.goAPIPassword) : that.goAPIPassword != null) return false;
+        if (goAPIServerHost != null ? !goAPIServerHost.equals(that.goAPIServerHost) : that.goAPIServerHost != null) return false;
 
         return true;
     }
@@ -110,6 +157,10 @@ public class DefaultPluginSettings implements PluginSettings {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (oauthToken != null ? oauthToken.hashCode() : 0);
         result = 31 * result + (results != null ? results.hashCode() : 0);
+        result = 31 * result + (goAPIUsername != null ? goAPIUsername.hashCode() : 0);
+        result = 31 * result + (goAPIPassword != null ? goAPIPassword.hashCode() : 0);
+        result = 31 * result + (goAPIServerHost != null ? goAPIServerHost.hashCode() : 0);
         return result;
     }
+
 }

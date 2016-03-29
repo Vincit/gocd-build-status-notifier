@@ -11,8 +11,8 @@ public class GerritPluginSettings extends DefaultPluginSettings {
     public GerritPluginSettings() {
     }
 
-    public GerritPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, Set<String> results, String reviewLabel) {
-        super(serverBaseURL, endPoint, username, password, oauthToken, results);
+    public GerritPluginSettings(String serverBaseURL, String endPoint, String username, String password, String oauthToken, Set<String> results, String reviewLabel, boolean passAtEnd, String goAPIUsername, String goAPIPassword, String goAPIServerHost) {
+        super(serverBaseURL, endPoint, username, password, oauthToken, results, passAtEnd, goAPIUsername, goAPIPassword, goAPIServerHost);
         this.reviewLabel = reviewLabel;
     }
 

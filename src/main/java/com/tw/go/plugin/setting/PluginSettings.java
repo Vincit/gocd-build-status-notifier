@@ -16,4 +16,12 @@ public interface PluginSettings {
     Set<String> getResults();
 
     boolean shouldNotify(String status);
+
+    boolean isPassAtEnd();
+
+    String getGoAPIUsername();
+
+    String getGoAPIPassword();
+
+    String getGoAPIServerHost();
 }

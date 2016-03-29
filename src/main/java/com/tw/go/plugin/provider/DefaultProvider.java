@@ -31,7 +31,11 @@ public abstract class DefaultProvider implements Provider {
                 responseBodyMap.get(PLUGIN_SETTINGS_USERNAME),
                 responseBodyMap.get(PLUGIN_SETTINGS_PASSWORD),
                 responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN),
-                resultParser.toSet(responseBodyMap)
+                resultParser.toSet(responseBodyMap),
+                CHECKBOX_TRUE_VALUE.equals(responseBodyMap.get(PLUGIN_SETTINGS_PASS_AT_END)),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_USERNAME),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_PASSWORD),
+                responseBodyMap.get(PLUGIN_SETTINGS_GO_API_SERVER_HOST)
         );
     }
 }

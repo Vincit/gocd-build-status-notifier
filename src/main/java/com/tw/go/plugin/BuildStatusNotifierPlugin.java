@@ -13,6 +13,8 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.tw.go.plugin.provider.Provider;
 import com.tw.go.plugin.setting.PluginSettings;
 import com.tw.go.plugin.util.JSONUtils;
+import com.tw.go.plugin.util.NotifyResolver;
+import com.tw.go.plugin.util.NotifyResolverFactory;
 import com.tw.go.plugin.util.StringUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -44,6 +46,7 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
 
     private Provider provider;
     private GoApplicationAccessor goApplicationAccessor;
+    private NotifyResolverFactory notifyResolverFactory;
 
     public BuildStatusNotifierPlugin() {
         try {
@@ -52,6 +55,7 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
             Class<?> providerClass = Class.forName(properties.getProperty("provider"));
             Constructor<?> constructor = providerClass.getConstructor();
             provider = (Provider) constructor.newInstance();
+            notifyResolverFactory = new NotifyResolverFactory();
         } catch (Exception e) {
             throw new RuntimeException("could not create provider", e);
         }
@@ -64,6 +68,10 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
         this.goApplicationAccessor = goApplicationAccessor;
+    }
+
+    public void setNotifyResolverFactory(NotifyResolverFactory notifyResolverFactory) {
+        this.notifyResolverFactory = notifyResolverFactory;
     }
 
     @Override
@@ -141,7 +149,8 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
             Map stage = (Map) pipeline.get("stage");
 
             String pipelineStage = String.format("%s/%s", pipeline.get("name"), stage.get("name"));
-            String pipelineInstance = String.format("%s/%s/%s/%s", pipeline.get("name"), pipeline.get("counter"), stage.get("name"), stage.get("counter"));
+            String pipelineCounter = (String)pipeline.get("counter");
+            String pipelineInstance = String.format("%s/%s/%s/%s", pipeline.get("name"), pipelineCounter, stage.get("name"), stage.get("counter"));
             String trackbackURL = String.format("%s/go/pipelines/%s", serverBaseURLToUse, pipelineInstance);
             String result = (String) stage.get("result");
 
@@ -158,7 +167,9 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
                     String prId = (String) modificationData.get("PR_ID");
 
                     try {
-                        if (pluginSettings.shouldNotify(result)) {
+                        NotifyResolver notifyResolver = notifyResolverFactory.getResolver(pluginSettings);
+
+                        if (notifyResolver.shouldNotify(pipelineStage, pipelineCounter, result)) {
                             provider.updateStatus(url, pluginSettings, prId, revision, pipelineStage, result, trackbackURL);
                         }
                     } catch (Exception e) {

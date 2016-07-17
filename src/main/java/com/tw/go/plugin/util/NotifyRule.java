@@ -4,14 +4,14 @@ import com.tw.go.plugin.setting.PluginSettings;
 
 import java.io.IOException;
 
-public class NotifyResolver {
+public class NotifyRule {
 
     public static final String PASSED_RESULT = "Passed";
 
     private final PluginSettings pluginSettings;
     private final boolean isLastStage;
 
-    public NotifyResolver(PluginSettings pluginSettings, boolean isLastStage) {
+    public NotifyRule(PluginSettings pluginSettings, boolean isLastStage) {
         this.pluginSettings = pluginSettings;
         this.isLastStage = isLastStage;
     }

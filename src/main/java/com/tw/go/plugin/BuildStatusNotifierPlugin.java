@@ -13,8 +13,8 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.tw.go.plugin.provider.Provider;
 import com.tw.go.plugin.setting.PluginSettings;
 import com.tw.go.plugin.util.JSONUtils;
-import com.tw.go.plugin.util.NotifyResolver;
-import com.tw.go.plugin.util.NotifyResolverFactory;
+import com.tw.go.plugin.util.NotifyRule;
+import com.tw.go.plugin.util.NotifyRuleResolver;
 import com.tw.go.plugin.util.StringUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -46,7 +46,7 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
 
     private Provider provider;
     private GoApplicationAccessor goApplicationAccessor;
-    private NotifyResolverFactory notifyResolverFactory;
+    private NotifyRuleResolver notifyRuleResolver;
 
     public BuildStatusNotifierPlugin() {
         try {
@@ -55,7 +55,7 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
             Class<?> providerClass = Class.forName(properties.getProperty("provider"));
             Constructor<?> constructor = providerClass.getConstructor();
             provider = (Provider) constructor.newInstance();
-            notifyResolverFactory = new NotifyResolverFactory();
+            notifyRuleResolver = new NotifyRuleResolver();
         } catch (Exception e) {
             throw new RuntimeException("could not create provider", e);
         }
@@ -70,8 +70,8 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
         this.goApplicationAccessor = goApplicationAccessor;
     }
 
-    public void setNotifyResolverFactory(NotifyResolverFactory notifyResolverFactory) {
-        this.notifyResolverFactory = notifyResolverFactory;
+    public void setNotifyRuleResolver(NotifyRuleResolver notifyRuleResolver) {
+        this.notifyRuleResolver = notifyRuleResolver;
     }
 
     @Override
@@ -167,10 +167,10 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
                     String prId = (String) modificationData.get("PR_ID");
 
                     try {
-                        NotifyResolver notifyResolver =
-                                notifyResolverFactory.getNotifyRule(pluginSettings, pipelineStage, pipelineCounter);
+                        NotifyRule notifyRule =
+                                notifyRuleResolver.getNotifyRule(pluginSettings, pipelineStage, pipelineCounter);
 
-                        if (notifyResolver.shouldNotify(result)) {
+                        if (notifyRule.shouldNotify(result)) {
                             provider.updateStatus(url, pluginSettings, prId, revision, pipelineStage, result, trackbackURL);
                         }
                     } catch (Exception e) {

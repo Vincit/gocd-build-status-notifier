@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 
-public class NotifyResolverTest {
+public class NotifyRuleTest {
 
     public static final String PASSED_STATE = "Passed";
     public static final String FAILED_STATE = "Failed";
@@ -38,56 +38,56 @@ public class NotifyResolverTest {
     @Test
     public void shouldNotify_OnlyStage_Passed() throws Exception {
         final PluginSettings settings = getSettingsNotifyPassedAtEnd();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, true);
-        assertThat(notifyResolver.shouldNotify(PASSED_STATE), is(true));
+        final NotifyRule notifyRule = new NotifyRule(settings, true);
+        assertThat(notifyRule.shouldNotify(PASSED_STATE), is(true));
     }
 
     @Test
     public void shouldNotify_LastStage_Passed() throws Exception {
         final PluginSettings settings = getSettingsNotifyPassedAtEnd();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, true);
+        final NotifyRule notifyRule = new NotifyRule(settings, true);
 
-        assertThat(notifyResolver.shouldNotify(PASSED_STATE), is(true));
+        assertThat(notifyRule.shouldNotify(PASSED_STATE), is(true));
     }
 
     @Test
     public void shouldNotify_NotLastStage_Passed() throws Exception {
         final PluginSettings settings = getSettingsNotifyPassedAtEnd();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, false);
+        final NotifyRule notifyRule = new NotifyRule(settings, false);
 
-        assertThat(notifyResolver.shouldNotify(PASSED_STATE), is(false));
+        assertThat(notifyRule.shouldNotify(PASSED_STATE), is(false));
     }
 
     @Test
     public void shouldNotify_NotLastStage_Passed_NotifyAlways() throws Exception {
         final PluginSettings settings = getSettingsNotifyAlways();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, false);
+        final NotifyRule notifyRule = new NotifyRule(settings, false);
 
-        assertThat(notifyResolver.shouldNotify(PASSED_STATE), is(true));
+        assertThat(notifyRule.shouldNotify(PASSED_STATE), is(true));
     }
 
     @Test
     public void shouldNotify_NotLastStage_Failed() throws Exception {
         final PluginSettings settings = getSettingsNotifyPassedAtEnd();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, false);
+        final NotifyRule notifyRule = new NotifyRule(settings, false);
 
-        assertThat(notifyResolver.shouldNotify(FAILED_STATE), is(true));
+        assertThat(notifyRule.shouldNotify(FAILED_STATE), is(true));
     }
 
     @Test
     public void shouldNotify_LastStage_Failed() throws Exception {
         final PluginSettings settings = getSettingsNotifyPassedAtEnd();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, true);
+        final NotifyRule notifyRule = new NotifyRule(settings, true);
 
-        assertThat(notifyResolver.shouldNotify(FAILED_STATE), is(true));
+        assertThat(notifyRule.shouldNotify(FAILED_STATE), is(true));
     }
 
     @Test
     public void shouldNotify_NotificationTypeTurnedOff() throws Exception {
         final PluginSettings settings = getSettingsNotifyOnlyFailed();
-        final NotifyResolver notifyResolver = new NotifyResolver(settings, true);
+        final NotifyRule notifyRule = new NotifyRule(settings, true);
 
-        assertThat(notifyResolver.shouldNotify(PASSED_STATE), is(false));
+        assertThat(notifyRule.shouldNotify(PASSED_STATE), is(false));
     }
 
     private PluginSettings getSettingsNotifyPassedAtEnd() {

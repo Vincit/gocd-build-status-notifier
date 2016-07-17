@@ -12,8 +12,8 @@ import com.tw.go.plugin.provider.stash.StashProvider;
 import com.tw.go.plugin.setting.PluginConfigurationView;
 import com.tw.go.plugin.setting.PluginSettings;
 import com.tw.go.plugin.util.JSONUtils;
-import com.tw.go.plugin.util.NotifyResolver;
-import com.tw.go.plugin.util.NotifyResolverFactory;
+import com.tw.go.plugin.util.NotifyRule;
+import com.tw.go.plugin.util.NotifyRuleResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,9 +39,9 @@ public class BuildStatusNotifierPluginTest {
     @Mock
     private Provider provider;
     @Mock
-    private NotifyResolverFactory notifyResolverFactory;
+    private NotifyRuleResolver notifyRuleResolver;
     @Mock
-    private NotifyResolver notifyResolver;
+    private NotifyRule notifyRule;
 
     private BuildStatusNotifierPlugin plugin;
 
@@ -60,12 +60,12 @@ public class BuildStatusNotifierPluginTest {
         when(provider.pluginId()).thenReturn(GitHubProvider.PLUGIN_ID);
         when(provider.pollerPluginId()).thenReturn(GitHubProvider.GITHUB_PR_POLLER_PLUGIN_ID);
 
-        when(notifyResolver.shouldNotify(anyString())).thenReturn(true);
-        when(notifyResolverFactory.getNotifyRule(any(PluginSettings.class), anyString(), anyString())).thenReturn(notifyResolver);
+        when(notifyRule.shouldNotify(anyString())).thenReturn(true);
+        when(notifyRuleResolver.getNotifyRule(any(PluginSettings.class), anyString(), anyString())).thenReturn(notifyRule);
 
         plugin.initializeGoApplicationAccessor(goApplicationAccessor);
         plugin.setProvider(provider);
-        plugin.setNotifyResolverFactory(notifyResolverFactory);
+        plugin.setNotifyRuleResolver(notifyRuleResolver);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class BuildStatusNotifierPluginTest {
         String stageCounter = "1";
         String result = "failed";
 
-        when(notifyResolver.shouldNotify(result)).thenReturn(false);
+        when(notifyRule.shouldNotify(result)).thenReturn(false);
 
         Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, result);
         plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));

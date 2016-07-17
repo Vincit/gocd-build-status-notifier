@@ -7,20 +7,20 @@ import com.tw.go.plugin.setting.PluginSettings;
 
 import java.io.IOException;
 
-public class NotifyResolverFactory {
+public class NotifyRuleResolver {
 
     private ServerFactory serverFactory;
 
-    public NotifyResolverFactory() {
+    public NotifyRuleResolver() {
         serverFactory = new ServerFactory();
     }
 
-    public NotifyResolverFactory(ServerFactory serverFactory) {
+    public NotifyRuleResolver(ServerFactory serverFactory) {
         this.serverFactory = serverFactory;
     }
 
-    public NotifyResolver getNotifyRule(PluginSettings settings, String pipelineStage, String counter) throws IOException {
-        return new NotifyResolver(settings, isLastStage(settings, pipelineStage, counter));
+    public NotifyRule getNotifyRule(PluginSettings settings, String pipelineStage, String counter) throws IOException {
+        return new NotifyRule(settings, isLastStage(settings, pipelineStage, counter));
     }
 
     boolean isLastStage(PluginSettings settings, String pipelineStage, String counter) throws IOException {

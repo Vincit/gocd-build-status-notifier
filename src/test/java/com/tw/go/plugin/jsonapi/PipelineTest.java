@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat;
 public class PipelineTest {
 
     @Test
-    public void testLastStage_OneStage() {
+    public void shouldReturnLastStageWhenOnlyOneStage() {
         Pipeline pipeline = new Pipeline();
         pipeline.name = "pipeline";
         pipeline.stages = new Stage[] {
@@ -19,7 +19,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void testLastStage_MultipleStages() {
+    public void shouldReturnLastStageWhenMultipleStages() {
         Pipeline pipeline = new Pipeline();
         pipeline.name = "pipeline";
         pipeline.stages = new Stage[] {

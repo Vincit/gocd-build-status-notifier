@@ -60,8 +60,8 @@ public class BuildStatusNotifierPluginTest {
         when(provider.pluginId()).thenReturn(GitHubProvider.PLUGIN_ID);
         when(provider.pollerPluginId()).thenReturn(GitHubProvider.GITHUB_PR_POLLER_PLUGIN_ID);
 
-        when(notifyResolver.shouldNotify(anyString(), anyString(), anyString())).thenReturn(true);
-        when(notifyResolverFactory.getResolver(any(PluginSettings.class))).thenReturn(notifyResolver);
+        when(notifyResolver.shouldNotify(anyString())).thenReturn(true);
+        when(notifyResolverFactory.getNotifyRule(any(PluginSettings.class), anyString(), anyString())).thenReturn(notifyResolver);
 
         plugin.initializeGoApplicationAccessor(goApplicationAccessor);
         plugin.setProvider(provider);
@@ -178,9 +178,7 @@ public class BuildStatusNotifierPluginTest {
         String stageCounter = "1";
         String result = "failed";
 
-        String pipelineStageName = String.format("%s/%s", pipelineName, stageName);
-
-        when(notifyResolver.shouldNotify(pipelineStageName, pipelineCounter, result)).thenReturn(false);
+        when(notifyResolver.shouldNotify(result)).thenReturn(false);
 
         Map requestBody = createRequestBodyMap(expectedURL, expectedUsername, expectedRevision, expectedPRId, pipelineName, pipelineCounter, stageName, stageCounter, result);
         plugin.handleStageNotification(createGoPluginAPIRequest(requestBody));

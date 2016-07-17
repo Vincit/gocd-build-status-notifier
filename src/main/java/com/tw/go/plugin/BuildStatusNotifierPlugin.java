@@ -167,9 +167,10 @@ public class BuildStatusNotifierPlugin implements GoPlugin {
                     String prId = (String) modificationData.get("PR_ID");
 
                     try {
-                        NotifyResolver notifyResolver = notifyResolverFactory.getResolver(pluginSettings);
+                        NotifyResolver notifyResolver =
+                                notifyResolverFactory.getNotifyRule(pluginSettings, pipelineStage, pipelineCounter);
 
-                        if (notifyResolver.shouldNotify(pipelineStage, pipelineCounter, result)) {
+                        if (notifyResolver.shouldNotify(result)) {
                             provider.updateStatus(url, pluginSettings, prId, revision, pipelineStage, result, trackbackURL);
                         }
                     } catch (Exception e) {
